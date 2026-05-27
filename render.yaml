@@ -23,7 +23,7 @@ services:
     name: news-dashboard
     runtime: python
     buildCommand: /opt/render/project/src/.venv/bin/pip install -r requirements.txt
-    startCommand: /opt/render/project/src/.venv/bin/uvicorn app.web.main:app --host 0.0.0.0 --port $PORT
+    startCommand: /opt/render/project/src/.venv/bin/python start_web.py
     envVars:
       - key: GROQ_API_KEY
         sync: false
