@@ -1,4 +1,4 @@
-# 🤖 AI News Aggregator — Phiên bản Lập trình viên Sinh viên (100% Miễn phí)
+# 🤖 AI News Aggregator — Phiên bản Sinh viên (100% Miễn phí)
 
 Hệ thống tự động thu thập tin tức công nghệ AI từ nhiều nguồn (YouTube, OpenAI, Anthropic, Hugging Face), sử dụng mô hình LLM qua Groq API để tóm tắt thông minh, tự động lọc nội dung phù hợp với sở thích cá nhân (User Profile) và gửi bản tin tổng hợp (Digest) qua Gmail hàng ngày, đi kèm giao diện Web Dashboard trực quan.
 
@@ -64,6 +64,9 @@ GMAIL_APP_PASSWORD=xxxx xxxx xxxx xxxx  # Mật khẩu ứng dụng Gmail (Bật
 DATABASE_URL=sqlite:///news.db  # Kết nối mặc định SQLite tại local
 ```
 
+> [!IMPORTANT]
+> **Bảo mật thông tin:** Không bao giờ được commit file `.env` lên GitHub. Tệp này đã được cấu hình mặc định bỏ qua trong `.gitignore`.
+
 ### 2. Cài đặt thư viện & Khởi chạy
 
 Dự án sử dụng trình quản lý `uv` nên bạn không cần cài thủ công bằng pip. Hãy chạy các lệnh sau tại terminal:
@@ -72,7 +75,8 @@ Dự án sử dụng trình quản lý `uv` nên bạn không cần cài thủ c
   ```bash
   uv run python init_db.py
   ```
-  *(Tự động tạo tệp `news.db` và thiết lập các bảng `articles`, `digests`)*.
+  > [!NOTE]
+  > Lệnh này sẽ tự động tạo tệp database local `news.db` và thiết lập các bảng `articles`, `digests`.
 
 * **Bước 2 — Chạy thử nghiệm cào tin & gửi email (Pipeline)**:
   ```bash
@@ -98,3 +102,67 @@ Dự án đã được cấu hình sẵn tệp [render.yaml](file:///c:/Users/AD
    * **Cron Job** tự động chạy `/opt/render/project/src/.venv/bin/python main.py` gửi email cho bạn lúc **14:00 giờ Việt Nam (7:00 UTC)** hàng ngày.
    * **Web Service** chạy `/opt/render/project/src/.venv/bin/python start_web.py` làm Web Dashboard.
 4. Thêm các biến môi trường `GROQ_API_KEY`, `GMAIL_ADDRESS`, và `GMAIL_APP_PASSWORD` vào mục Environment trên Dashboard của Render.
+
+> [!TIP]
+> **Đồng bộ hóa môi trường ảo local:** Hãy chạy lệnh `uv lock` trước khi commit và push code lên GitHub để đảm bảo tệp khóa `uv.lock` đồng bộ với cấu hình `pyproject.toml` giúp tiến trình build của Render mượt mà hơn.
+
+---
+
+## 🛠️ Hướng dẫn nâng cao & Mở rộng (Advanced walkthrough)
+
+<details>
+<summary><b>1. Thiết kế BaseScraper tránh lặp mã nguồn (Giai đoạn 7)</b></summary>
+
+Các scraper đều kế thừa từ lớp cha [BaseScraper](file:///c:/Users/ADMIN/Desktop/ai-news-aggregator/app/scrapers/base.py) và tự động đăng ký vào registry:
+
+```python
+from abc import ABC, abstractmethod
+
+class BaseScraper(ABC):
+    @property
+    @abstractmethod
+    def source_name(self) -> str:
+        pass
+
+    @abstractmethod
+    def fetch_articles(self) -> list[dict]:
+        pass
+
+    def fetch_content(self, url: str) -> str | None:
+        return None
+```
+</details>
+
+<details>
+<summary><b>2. Đăng ký thêm nguồn tin mới cực kỳ nhanh chóng</b></summary>
+
+Để thêm một nguồn tin mới (Ví dụ: Hugging Face Blog), chỉ cần viết một lớp kế thừa từ `BaseScraper`:
+
+```python
+# app/scrapers/huggingface.py
+from .base import BaseScraper
+import feedparser
+
+class HuggingFaceScraper(BaseScraper):
+    source_name = "huggingface"
+    
+    def fetch_articles(self) -> list[dict]:
+        feed = feedparser.parse("https://huggingface.co/blog/feed.xml")
+        # Xử lý trả về metadata chuẩn hóa của bài viết
+        return [...]
+```
+Sau đó, chỉ cần thêm lớp này vào `SCRAPER_REGISTRY` tại [__init__.py](file:///c:/Users/ADMIN/Desktop/ai-news-aggregator/app/scrapers/__init__.py), pipeline chính sẽ tự động cào tin từ nguồn này mà không cần thay đổi bất kỳ dòng code nào khác.
+</details>
+
+---
+
+## 📝 Danh sách đầu việc & Tiến độ dự án (Task Checklist)
+
+- [x] Thiết lập Project & môi trường với `uv`
+- [x] Xây dựng Scrapers thu thập dữ liệu (YouTube, OpenAI, Anthropic)
+- [x] Thiết lập Database đồng nhất với SQLAlchemy ORM & SQLite
+- [x] Tích hợp AI Agents tóm tắt & Curate tin tức qua Groq API (LLaMA 3.1)
+- [x] Tích hợp Email Agent gửi tin qua SMTP Gmail
+- [x] Tái cấu trúc mã nguồn theo hướng OOP (Scraper Registry)
+- [x] Xây dựng giao diện FastAPI Web UI Dashboard (Dark/Light mode, Real-time logs)
+- [x] Viết tệp cấu hình Blueprint `render.yaml` hỗ trợ triển khai Cloud
