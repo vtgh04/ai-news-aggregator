@@ -5,10 +5,3 @@
    Đang chạy openai scraper...
    ✅ Openai: Đã thu thập 10 bài
    Đang chạy anthropic scraper...
-   ✅ Anthropic: Đã thu thập 5 bài
-   Đang chạy huggingface scraper...
-   ✅ Huggingface: Đã thu thập 5 bài
-=== Giai đoạn 2: Lấy nội dung chi tiết ===
-=== Giai đoạn 3: Tóm tắt bằng AI ===
-=== Giai đoạn 4: Giám tuyển & gửi email ===
-Pipeline hoàn tất.
