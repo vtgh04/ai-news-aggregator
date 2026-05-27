@@ -9,8 +9,9 @@ from app.db.repository import (
     update_article_content,
     get_unprocessed_content_for_digest,
     save_digest,
-    get_unsent_digests,
-    mark_digests_sent,
+    get_all_users,
+    get_unsent_digests_for_user,
+    mark_digests_sent_for_user,
 )
 
 
@@ -69,17 +70,36 @@ def run_pipeline():
             save_digest(digest)
 
     print("=== Giai đoạn 4: Giám tuyển & gửi email ===")
-    digests = get_unsent_digests()
-    if not digests:
-        print("Không có tin mới hôm nay.")
+    users = get_all_users()
+    if not users:
+        print("Không có người dùng nào trong hệ thống.")
         return
 
-    # Loại bỏ _sa_instance_state của SQLAlchemy
-    clean_digests = [
-        {k: v for k, v in d.__dict__.items() if not k.startswith("_")}
-        for d in digests
-    ]
-    top = curate(clean_digests)
-    send_digest(top)
-    mark_digests_sent([d["id"] for d in top])
+    for user in users:
+        print(f"   Đang xử lý bản tin cho {user.name} ({user.email})...")
+        digests = get_unsent_digests_for_user(user.id)
+        
+        # Giới hạn tối đa 30 tin tức chưa gửi để tránh quá tải token LLM
+        if len(digests) > 30:
+            digests = digests[:30]
+            
+        if not digests:
+            print(f"   Không có tin mới cho {user.name}.")
+            continue
+
+        # Loại bỏ _sa_instance_state của SQLAlchemy
+        clean_digests = [
+            {k: v for k, v in d.__dict__.items() if not k.startswith("_")}
+            for d in digests
+        ]
+        
+        top = curate(clean_digests, user.profile)
+        if top:
+            send_digest(user.email, top, user.name)
+            mark_digests_sent_for_user(user.id, [d["id"] for d in top])
+            print(f"   ✅ Đã gửi email cho {user.name} với {len(top)} bài chọn lọc.")
+        else:
+            print(f"   Không chọn được bài nào phù hợp cho {user.name}.")
+            
     print("Pipeline hoàn tất.")
+

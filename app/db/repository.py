@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from .models import engine, Article, Digest
+from .models import engine, Article, Digest, User, UserDigest
 from datetime import datetime
 
 
@@ -150,4 +150,64 @@ def save_user_profile(profile_text: str):
     os.makedirs(os.path.dirname(profile_path), exist_ok=True)
     with open(profile_path, "w", encoding="utf-8") as f:
         f.write(profile_text)
+
+
+def get_all_users() -> list[User]:
+    """Lấy danh sách tất cả người dùng."""
+    with Session(engine) as s:
+        return s.query(User).order_by(User.created_at.desc()).all()
+
+
+def save_user(data: dict):
+    """Tạo mới hoặc cập nhật thông tin người dùng."""
+    with Session(engine) as s:
+        user = s.get(User, data["id"])
+        if user:
+            # Cập nhật thông tin
+            user.email = data["email"]
+            user.name = data["name"]
+            user.profile = data["profile"]
+        else:
+            # Thêm mới
+            s.add(User(**data))
+        s.commit()
+
+
+def delete_user(user_id: str):
+    """Xóa người dùng và tất cả lịch sử gửi tin liên quan."""
+    with Session(engine) as s:
+        user = s.get(User, user_id)
+        if user:
+            s.delete(user)
+            # Đồng thời xóa lịch sử gửi tin của user này trong user_digests
+            s.query(UserDigest).filter(UserDigest.user_id == user_id).delete()
+            s.commit()
+
+
+def get_unsent_digests_for_user(user_id: str) -> list[Digest]:
+    """Lấy các digests chưa được gửi cho người dùng cụ thể."""
+    with Session(engine) as s:
+        # Lấy danh sách digest_id đã gửi cho user_id này
+        sent_ids = [
+            ud.digest_id for ud in s.query(UserDigest.digest_id).filter(UserDigest.user_id == user_id).all()
+        ]
+        
+        # Lấy tất cả digest chưa được lưu trong bảng user_digests của user_id này
+        q = s.query(Digest)
+        if sent_ids:
+            q = q.filter(~Digest.id.in_(sent_ids))
+            
+        return q.order_by(Digest.created_at.desc()).all()
+
+
+def mark_digests_sent_for_user(user_id: str, digest_ids: list[str]):
+    """Đánh dấu các digests là đã gửi cho người dùng cụ thể."""
+    with Session(engine) as s:
+        for digest_id in digest_ids:
+            # Kiểm tra nếu chưa tồn tại vết ghi gửi
+            exists = s.query(UserDigest).filter_by(user_id=user_id, digest_id=digest_id).first() is not None
+            if not exists:
+                s.add(UserDigest(user_id=user_id, digest_id=digest_id, sent_at=datetime.utcnow()))
+        s.commit()
+
 

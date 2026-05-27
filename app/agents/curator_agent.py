@@ -3,10 +3,7 @@ from groq import Groq
 
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
-from app.db.repository import get_user_profile
-
-def curate(digests: list[dict]) -> list[dict]:
-    user_profile = get_user_profile()
+def curate(digests: list[dict], user_profile: str) -> list[dict]:
     items_text = "\n".join(
         f"{i+1}. [{d['category']}] {d['title']}: {d['summary']}"
         for i, d in enumerate(digests)

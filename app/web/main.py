@@ -16,6 +16,9 @@ from app.db.repository import (
     get_dashboard_stats,
     get_user_profile,
     save_user_profile,
+    get_all_users,
+    save_user,
+    delete_user,
 )
 from app.runner import run_pipeline
 
@@ -67,6 +70,18 @@ def to_dict(obj):
 
 
 class ProfileUpdate(BaseModel):
+    profile: str
+
+
+class UserCreate(BaseModel):
+    name: str
+    email: str
+    profile: str
+
+
+class UserUpdate(BaseModel):
+    name: str
+    email: str
     profile: str
 
 
@@ -124,6 +139,56 @@ def api_save_profile(data: ProfileUpdate):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.get("/api/users")
+def api_users():
+    try:
+        users = get_all_users()
+        return [to_dict(u) for u in users]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/users")
+def api_create_user(user: UserCreate):
+    try:
+        import uuid
+        user_id = str(uuid.uuid4())
+        data = {
+            "id": user_id,
+            "name": user.name,
+            "email": user.email,
+            "profile": user.profile,
+        }
+        save_user(data)
+        return {"status": "success", "message": "Thêm người dùng thành công!", "user_id": user_id}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.put("/api/users/{user_id}")
+def api_update_user(user_id: str, user: UserUpdate):
+    try:
+        data = {
+            "id": user_id,
+            "name": user.name,
+            "email": user.email,
+            "profile": user.profile,
+        }
+        save_user(data)
+        return {"status": "success", "message": "Cập nhật người dùng thành công!"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.delete("/api/users/{user_id}")
+def api_delete_user(user_id: str):
+    try:
+        delete_user(user_id)
+        return {"status": "success", "message": "Xóa người dùng thành công!"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.post("/api/pipeline/run")
 def api_run_pipeline():
     global is_running
@@ -159,3 +224,4 @@ def api_pipeline_status():
         "is_running": is_running,
         "logs": log_content
     }
+
