@@ -1,5 +1,15 @@
 # 🤖 AI News Aggregator — Phiên bản Sinh viên (100% Miễn phí)
 
+<p align="center">
+  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54" alt="Python" /></a>
+  <a href="https://fastapi.tiangolo.com/"><img src="https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi" alt="FastAPI" /></a>
+  <a href="https://www.sqlite.org/"><img src="https://img.shields.io/badge/sqlite-%2307405e.svg?style=for-the-badge&logo=sqlite&logoColor=white" alt="SQLite" /></a>
+  <a href="https://www.postgresql.org/"><img src="https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL" /></a>
+  <a href="https://llama.meta.com/"><img src="https://img.shields.io/badge/Meta%20LLaMA%203.1-044F79?style=for-the-badge&logo=meta&logoColor=white" alt="LLaMA 3.1" /></a>
+  <a href="https://mail.google.com/"><img src="https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white" alt="Gmail" /></a>
+  <a href="https://render.com/"><img src="https://img.shields.io/badge/Render-%2346E3B7.svg?style=for-the-badge&logo=render&logoColor=white" alt="Render" /></a>
+</p>
+
 Hệ thống tự động thu thập tin tức công nghệ AI từ nhiều nguồn (YouTube, OpenAI, Anthropic, Hugging Face), sử dụng mô hình LLM qua Groq API để tóm tắt thông minh, tự động lọc nội dung phù hợp với sở thích cá nhân (User Profile) và gửi bản tin tổng hợp (Digest) qua Gmail hàng ngày, đi kèm giao diện Web Dashboard trực quan.
 
 ---
