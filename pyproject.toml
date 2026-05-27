@@ -1,0 +1,20 @@
+[project]
+name = "ai-news-aggregator"
+version = "0.1.0"
+description = "Automated AI news digest system"
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic",
+    "sqlalchemy",
+    "requests",
+    "feedparser",
+    "youtube-transcript-api",
+    "html-to-markdown",
+    "groq",
+    "python-dotenv",
+    "ipykernel",
+    "fastapi",
+    "uvicorn",
+    "jinja2",
+    "psycopg2-binary",
+]
