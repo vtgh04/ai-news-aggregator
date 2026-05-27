@@ -40,11 +40,12 @@ class Digest(Base):
 class User(Base):
     __tablename__ = "users"
 
-    id         = Column(String, primary_key=True)  # uuid
-    email      = Column(String, unique=True, nullable=False)
-    name       = Column(String, nullable=False)
-    profile    = Column(Text, nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    id              = Column(String, primary_key=True)  # uuid
+    email           = Column(String, unique=True, nullable=False)
+    name            = Column(String, nullable=False)
+    profile         = Column(Text, nullable=False)
+    hashed_password = Column(String, nullable=False)
+    created_at      = Column(DateTime, default=datetime.utcnow)
 
 
 class UserDigest(Base):
@@ -79,15 +80,17 @@ Không quan tâm: crypto, NFT, tin tức chính trị
                     except Exception:
                         pass
                 
+                from app.web.auth import hash_password
                 admin_user = User(
                     id=str(uuid.uuid4()),
                     email=admin_email,
                     name="Admin (Bạn)",
-                    profile=default_profile
+                    profile=default_profile,
+                    hashed_password=hash_password("admin123")
                 )
                 session.add(admin_user)
                 session.commit()
-                print("   [DB] Đã khởi tạo người dùng Admin mặc định.")
+                print("   [DB] Đã khởi tạo người dùng Admin mặc định (mật khẩu: admin123).")
         except Exception as e:
             print(f"   [DB ERROR] Không thể khởi tạo người dùng mặc định: {e}")
 

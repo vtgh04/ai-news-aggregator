@@ -167,6 +167,8 @@ def save_user(data: dict):
             user.email = data["email"]
             user.name = data["name"]
             user.profile = data["profile"]
+            if "hashed_password" in data and data["hashed_password"]:
+                user.hashed_password = data["hashed_password"]
         else:
             # Thêm mới
             s.add(User(**data))
