@@ -1,0 +1,12 @@
+pydantic
+sqlalchemy
+requests
+feedparser
+youtube-transcript-api
+html-to-markdown
+groq
+python-dotenv
+fastapi
+uvicorn
+jinja2
+psycopg2-binary

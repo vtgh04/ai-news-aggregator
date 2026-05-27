@@ -19,7 +19,7 @@ Dự án được tối ưu hóa sử dụng toàn bộ các công cụ và dị
 | Thành phần | Công nghệ sử dụng | Mục đích & Ưu điểm |
 | :--- | :--- | :--- |
 | **Ngôn ngữ** | `Python 3.11+` | Ngôn ngữ cốt lõi cho AI & Scraping. |
-| **Trình quản lý** | `uv` | Trình quản lý package siêu tốc, nhanh hơn pip nhiều lần. |
+| **Trình quản lý** | `uv` / `pip` | Trình quản lý package siêu tốc `uv` tại local, và `requirements.txt` khi deploy. |
 | **Web Server** | `FastAPI` & `Uvicorn` | API server nhẹ, tốc độ cao để chạy Dashboard. |
 | **Giao diện (UI)** | `Jinja2`, `HTML5` & `Vanilla CSS` | Giao diện Dark/Light Mode hiện đại, hiệu ứng Glassmorphism. |
 | **Cơ sở dữ liệu** | `SQLAlchemy` (ORM) & `SQLite` / `PostgreSQL` | Local lưu trữ trong file `news.db` dạng SQLite, Production chạy PostgreSQL. |
@@ -91,10 +91,10 @@ Dự án sử dụng trình quản lý `uv` nên bạn không cần cài thủ c
 
 Dự án đã được cấu hình sẵn tệp [render.yaml](file:///c:/Users/ADMIN/Desktop/ai-news-aggregator/render.yaml) để tự động hóa hoàn toàn quá trình triển khai:
 
-1. Đẩy mã nguồn lên một Repository GitHub của bạn.
+1. Đẩy mã nguồn lên một Repository GitHub của bạn (bao gồm cả tệp `requirements.txt` và `render.yaml`).
 2. Đăng nhập vào **Render.com** -> Bấm **New** -> **Blueprint**.
 3. Chọn repo `ai-news-aggregator`. Render sẽ tự động cấu hình:
    * **Database (PostgreSQL)** để chạy production.
-   * **Cron Job** tự động thức giấc cào tin và gửi email cho bạn vào **14:00 giờ Việt Nam (7:00 UTC)** mỗi ngày.
-   * **Web Service** chạy ứng dụng FastAPI Dashboard để bạn truy cập từ internet.
+   * **Cron Job** tự động chạy `python main.py` gửi email cho bạn lúc **14:00 giờ Việt Nam (7:00 UTC)** hàng ngày.
+   * **Web Service** chạy `uvicorn app.web.main:app` làm Web Dashboard.
 4. Thêm các biến môi trường `GROQ_API_KEY`, `GMAIL_ADDRESS`, và `GMAIL_APP_PASSWORD` vào mục Environment trên Dashboard của Render.

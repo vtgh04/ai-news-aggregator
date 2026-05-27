@@ -3,8 +3,8 @@ services:
   - type: cron
     name: daily-digest
     runtime: python
-    buildCommand: pip install uv && uv sync
-    startCommand: .venv/bin/python main.py
+    buildCommand: pip install uv && uv pip install --system -r requirements.txt
+    startCommand: python main.py
     schedule: "0 7 * * *"
     envVars:
       - key: GROQ_API_KEY
@@ -22,8 +22,8 @@ services:
   - type: web
     name: news-dashboard
     runtime: python
-    buildCommand: pip install uv && uv sync
-    startCommand: .venv/bin/uvicorn app.web.main:app --host 0.0.0.0 --port $PORT
+    buildCommand: pip install uv && uv pip install --system -r requirements.txt
+    startCommand: uvicorn app.web.main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: GROQ_API_KEY
         sync: false
