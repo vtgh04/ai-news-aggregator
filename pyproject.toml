@@ -17,6 +17,4 @@ dependencies = [
     "uvicorn",
     "jinja2",
     "psycopg2-binary",
-    "itsdangerous",
-    "python-multipart",
 ]
