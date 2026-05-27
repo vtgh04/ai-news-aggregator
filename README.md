@@ -95,6 +95,6 @@ Dự án đã được cấu hình sẵn tệp [render.yaml](file:///c:/Users/AD
 2. Đăng nhập vào **Render.com** -> Bấm **New** -> **Blueprint**.
 3. Chọn repo `ai-news-aggregator`. Render sẽ tự động cấu hình:
    * **Database (PostgreSQL)** để chạy production.
-   * **Cron Job** tự động chạy `python main.py` gửi email cho bạn lúc **14:00 giờ Việt Nam (7:00 UTC)** hàng ngày.
-   * **Web Service** chạy `uvicorn app.web.main:app` làm Web Dashboard.
+   * **Cron Job** tự động chạy `/opt/render/project/src/.venv/bin/python main.py` gửi email cho bạn lúc **14:00 giờ Việt Nam (7:00 UTC)** hàng ngày.
+   * **Web Service** chạy `/opt/render/project/src/.venv/bin/uvicorn app.web.main:app` làm Web Dashboard.
 4. Thêm các biến môi trường `GROQ_API_KEY`, `GMAIL_ADDRESS`, và `GMAIL_APP_PASSWORD` vào mục Environment trên Dashboard của Render.
